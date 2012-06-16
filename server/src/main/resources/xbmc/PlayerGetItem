@@ -1,0 +1,23 @@
+{
+  "returns": {
+    "type": "object", 
+    "properties": {
+      "item": {
+        "required": true, 
+        "$ref": "List.Item.All"
+      }
+    }
+  }, 
+  "params": [
+    {
+      "required": true, 
+      "name": "playerid", 
+      "$ref": "Player.Id"
+    }, 
+    {
+      "name": "properties", 
+      "$ref": "List.Fields.All"
+    }
+  ], 
+  "description": "Retrieves the currently played item"
+}
