@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
+    <title>Hotify</title>
+    <link rel="stylesheet" href="lib/jQuery/jquery.mobile-1.1.0.css" />
+
+    <script src="lib/jQuery/jquery-1.7.1.min.js"></script>
+    <script src="lib/jQuery/jquery.mobile-1.1.0.min.js"></script>
+    <script src="lib/angular-1.0.0.min.js"></script>
+    <script src="lib/jquery-mobile-angular-adapter.js"></script>
+    <script src="lib/hotify.js"></script>
+
+    <style>
+        .ui-input-text,
+        .ui-select {
+            width: 100% !important;
+            padding: 0.4em 0 !important;
+        }
+    </style>
+</head>
+<body>
+<div ng-controller="hotifyController" ng-app="hotify">
+    <div id="main" data-role="page" ngm-pagebeforeshow="refreshsongs()" ngm-swipeleft="showSettings()">
+        <div data-role="header">
+            <h1>Hotify Your Spotify</h1>
+            <a href="" id="savesongs" data-role="button" ngm-click="savesongs()">Save</a>
+            <a href="#settings" data-role="button">Settings</a>
+        </div>
+
+        <div data-role="content">
+            <div data-role="fieldcontain">
+                Current Song
+            </div>
+            <div data-role="fieldcontain">
+                <form data-ajax="false">
+                    <input type="text" id="inputTitle" ng-model="$parent.inputTitle" placeholder="Enter title" ng-model-instant>
+                    <input type="text" id="inputArtist" ng-model="$parent.inputArtist" placeholder="Enter artist" ng-model-instant>
+                    <a ng-click="addsong()" data-role="button" data-icon="add">Add Song</a> 
+                </form>
+            </div>
+            <div data-role="controlgroup">
+                <fieldset ng-repeat="song in songs | paged:{pageSize:5}">
+                    <input type="checkbox" ng-model="song.done" id="checked">
+                    <label for="checked">{{song.title}} - {{song.artist}}</label>
+                </fieldset>
+                <div ngm-if="songs | paged:'hasMore'">
+                    <a href="#" ngm-click="songs | paged:'loadMore'" data-role="button">Load more</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings" data-role="page" ngm-swiperight="back()">
+        <div data-role="header">
+            <h1>Settings</h1>
+            <a href="" id="saveSettings" data-role="button" data-rel="back">Save</a>
+        </div>
+
+        <div data-role="content">
+            <div data-role="fieldcontain">
+                <input type="text" id="storageKey" ng-model="$parent.storageKey" placeholder="enter your storage key here">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
