@@ -1,0 +1,16 @@
+{
+	"BundleType": "Application",
+	"BundleIdentifier": "tutorial",
+	"AppIcon": {
+		"36x18": "tutorial.png"
+	},
+	"AppName": {
+		"en": "Tutorial"
+	},
+	"SupportedLanguages": [
+		"en"
+	],
+	"RequiredPermissions": [
+		"http://ws.audioscrobbler.com"
+	]
+}
