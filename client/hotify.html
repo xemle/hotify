@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
-    <title>Hotify</title>
+    <title>Hotify Your Spotify</title>
     <link rel="stylesheet" href="lib/jQuery/jquery.mobile-1.1.0.css" />
 
     <script src="lib/jQuery/jquery-1.7.1.min.js"></script>
@@ -10,7 +10,8 @@
     <script src="lib/angular-1.0.0.min.js"></script>
     <script src="lib/jquery-mobile-angular-adapter.js"></script>
     <script src="lib/hotify.js"></script>
-
+	<link rel="stylesheet" href="hotify.css" />
+	
     <style>
         .ui-input-text,
         .ui-select {
@@ -21,42 +22,29 @@
 </head>
 <body>
 <div ng-controller="hotifyController" ng-app="hotify">
-    <div id="main" data-role="page" ngm-swipeleft="showSettings()">
+    <div id="main" data-role="page" ngm-swiperight="showSearch()"  ngm-swipeleft="showSettings()">
         <div data-role="header">
             <h1>Hotify Your Spotify</h1>
-            <a href="#search" data-role="button">Search</a>
-            <a href="#settings" data-role="button">Settings</a>
+            <a href="#search" data-role="button" data-icon="search">Search</a>
+            <a href="#settings" data-role="button" data-icon="gear">Settings</a>
         </div>
 
         <div data-role="content">
-            <div data-role="fieldcontain">
-				<table style="width:50%; margin: auto;" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
-				  <caption style="font-size:30px">Now Playing</caption>
-				  <tbody>
-				  	  <tr>
-				  	    <td></td>
-				  	    <td><img ng-src="{{activeSong.thumbnail}}" width="60px" height="60px"/></td>		
-					  <tr>
-					    <td align="right">Song</th>
-					    <td style="font-weight:bold">{{activeSong.title}}</td>
-					  </tr>
-					  <tr>
-					    <td align="right">Artist</th>
-					    <td style="font-weight:bold">{{activeSong.artist}}</td>
-					  </tr>
-					  <tr>
-					    <td align="right">Details</th>
-					    <td style="font-weight:bold">{{activeSong.album}} - {{activeSong.genre}}</td>
-					  </tr>
-				  </tbody>
-				</table>	
-            </div>
+        	<div id="box-active-song" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+	        	<img ng-src="{{activeSong.thumbnail}}" width="80" height="80"/>
+	        	<p class="header">Currently playing...</p>
+	        	<p class="song-title">{{activeSong.title}}</p>
+	        	<p class="song-artist">by {{activeSong.artist}}</p>
+	        	<p class="song-genre">from year {{activeSong.year}}. Genre {{activeSong.genre}}</p>
+	        	<div class="clearfix"></div>
+        	</div>
 			<ul id="songlist" data-role="listview" data-inset="true" data-split-icon="delete"  data-split-theme="d" >
 				<li ng-repeat="song in songs | paged:{pageSize:3}">
 					<a href="index.html">
 					<img ng-src="{{song.thumbnail}}" width="80" height="80"/>
 					<h3>{{song.title}}</h3>
-					<p>{{song.artist}}</p></a>
+					<p>{{song.artist}}</p>
+					<span class="ui-li-count">Votes 5</span></a>
 					<a href="#" data-rel="dialog" data-transition="slideup"></a>
 				</li>
 			</ul>
@@ -77,7 +65,7 @@
                 <form data-ajax="false">
                     <input type="text" id="inputTitle" ng-model="$parent.inputTitle" placeholder="Enter title" ng-model-instant>
                     <input type="text" id="inputArtist" ng-model="$parent.inputArtist" placeholder="Enter artist" ng-model-instant>
-                    <a ng-click="addsong()" data-role="button" data-icon="add">Add Song</a> 
+                    <a ng-click="addsong()" data-role="button" data-icon="search">Search Song</a> 
                 </form>
             </div>
         </div>

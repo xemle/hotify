@@ -29,15 +29,16 @@ module.factory('songStore', function ($http, $waitDialog, $log) {
     return {
         read:read,
         write:write
-    }
+    };
 });
 
-module.controller('hotifyController', function ($scope, $navigate, songStore) {
+module.controller('hotifyController', function ($scope, $navigate, songStore, $log) {
     $scope.storageKey = 'hotify';
-    $scope.activeSong = {};
+    $scope.activeSong = {title: 'title', artist: 'artist', genre: 'genre'};
     $scope.songs = [];
     $scope.inputTitle = '';
     $scope.inputArtist = '';
+    $scope.ws = null;
 
     $scope.addsong = function () {
         $scope.songs.push({
@@ -49,10 +50,12 @@ module.controller('hotifyController', function ($scope, $navigate, songStore) {
         $navigate('back');
         $scope.inputTitle = '';
         $scope.inputArtist = '';
-        $('#songlist').listview('refresh');
     };
     $scope.showSettings = function () {
         $navigate("#settings");
+    };
+    $scope.showSearch = function () {
+        $navigate("#search");
     };
     $scope.back = function () {
         $navigate('back');
@@ -86,6 +89,21 @@ module.controller('hotifyController', function ($scope, $navigate, songStore) {
         songStore.write($scope.storageKey, $scope.songs);
     };
 
-    $scope.refreshActiveSong();
-    $scope.refreshsongs();
+    $scope.openWs = function() {
+    	var ws = new WebSocket("ws://172.31.8.50:8080");
+    	ws.onmessage = function(evt) {
+        	if (evt.data) {
+        		var data = JSON.parse(evt.data);
+        		$scope.activeSong = data[0];
+        		$scope.$apply();
+        	}
+    	};
+    	ws.onopen = function() {
+    		//alert("Websocket is open!");
+    	};
+    	//$scope.ws = ws;
+    };
+//    $scope.refreshActiveSong();
+//    $scope.refreshsongs();
+    $scope.openWs();
 });
