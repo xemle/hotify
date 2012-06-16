@@ -1,18 +1,18 @@
 var module = angular.module("hotify", []);
 
-module.factory('songStore', function ($http, $waitDialog) {
-    var readUrl = 'https://secure.openkeyval.org/';
-    var writeUrl = 'https://secure.openkeyval.org/store/?';
+module.factory('songStore', function ($http, $waitDialog, $log) {
+    var readUrl = 'http://172.31.8.13:8080/hotify-server/services/';
+    var writeUrl = readUrl;
 
     function read(key) {
         $waitDialog.show();
         return $http({
-            method:'JSONP',
-            url:readUrl + key + '?callback=JSON_CALLBACK'
+            method: 'GET',
+            url: readUrl + key
         }).then(function (response) {
-                $waitDialog.hide();
-                return response.data;
-            });
+            $waitDialog.hide();
+            return response.data;
+        });
     }
 
     function write(key, value) {
@@ -33,14 +33,23 @@ module.factory('songStore', function ($http, $waitDialog) {
 });
 
 module.controller('hotifyController', function ($scope, $navigate, songStore) {
-    $scope.storageKey = 'JQueryMobileAngulartodoapp';
+    $scope.storageKey = 'hotify';
+    $scope.activeSong = {};
     $scope.songs = [];
-    $scope.inputText = '';
+    $scope.inputTitle = '';
+    $scope.inputArtist = '';
 
     $scope.addsong = function () {
-        $scope.songs.push({title: $scope.inputTitle, artist: $scope.inputArtist, done: false});
+        $scope.songs.push({
+        	title: $scope.inputTitle, 
+        	artist: $scope.inputArtist, 
+        	thumbnail: '', 
+        	genre: '', 
+        	done: false});
+        $navigate('back');
         $scope.inputTitle = '';
         $scope.inputArtist = '';
+        $('#songlist').listview('refresh');
     };
     $scope.showSettings = function () {
         $navigate("#settings");
@@ -48,8 +57,16 @@ module.controller('hotifyController', function ($scope, $navigate, songStore) {
     $scope.back = function () {
         $navigate('back');
     };
+    $scope.refreshActiveSong = function () {
+        songStore.read('activesong').then(function (data) {
+            if (!data) {
+                data = [];
+            }
+            $scope.activeSong = data;
+        });
+    };
     $scope.refreshsongs = function () {
-        songStore.read($scope.storageKey).then(function (data) {
+        songStore.read('playlistitems').then(function (data) {
             if (!data) {
                 data = [];
             }
@@ -69,5 +86,6 @@ module.controller('hotifyController', function ($scope, $navigate, songStore) {
         songStore.write($scope.storageKey, $scope.songs);
     };
 
+    $scope.refreshActiveSong();
     $scope.refreshsongs();
 });
