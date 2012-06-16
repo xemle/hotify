@@ -1,5 +1,25 @@
 var module = angular.module("hotify", []);
 
+module.factory('wsService', function ($scope) {
+	
+});
+
+module.factory('trackMocks', function ($http, $waitDialog, $log) {
+    var mockUrl = 'tracks.json';
+    function load(key) {
+        return $http({
+            method: 'GET',
+            url: mockUrl
+        }).then(function (response) {
+            return response.data;
+        });
+    }
+    
+    return {
+    	load: load
+    };    
+});
+
 module.factory('songStore', function ($http, $waitDialog, $log) {
     var readUrl = 'http://172.31.8.13:8080/hotify-server/services/';
     var writeUrl = readUrl;
@@ -32,10 +52,10 @@ module.factory('songStore', function ($http, $waitDialog, $log) {
     };
 });
 
-module.controller('hotifyController', function ($scope, $navigate, songStore, $log) {
+module.controller('hotifyController', function ($scope, $navigate, songStore, trackMocks, $log) {
     $scope.storageKey = 'hotify';
     $scope.activeSong = {title: 'title', artist: 'artist', genre: 'genre'};
-    $scope.songs = [];
+    $scope.tracks = [];
     $scope.inputTitle = '';
     $scope.inputArtist = '';
     $scope.ws = null;
@@ -89,12 +109,29 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, $l
         songStore.write($scope.storageKey, $scope.songs);
     };
 
-    $scope.openWs = function() {
-    	var ws = new WebSocket("ws://172.31.8.50:8080");
+    $scope.updatePlaylist = function(data) {
+    	var clean = [];
+    	for (var i = 0; i < Math.min(data.tracks.length, 20); i++) {
+    		clean.push(data.tracks[i].data);	
+		}
+    	$scope.tracks = clean;
+    };
+    
+    /**
+     * Dispatch WebSocket Events
+     */
+    $scope.dispatchWsData = function(data) {
+    	if (data.eventType == 'PlaylistUpdated') {
+    		$scope.updatePlaylist(data);
+    	}
+    };
+    
+    $scope.createWsChannel = function(host, port) {
+    	var ws = new WebSocket("ws://" + host + ":" + port);
     	ws.onmessage = function(evt) {
         	if (evt.data) {
         		var data = JSON.parse(evt.data);
-        		$scope.activeSong = data[0];
+        		$scope.dispatchWsData(data);
         		$scope.$apply();
         	}
     	};
@@ -105,5 +142,8 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, $l
     };
 //    $scope.refreshActiveSong();
 //    $scope.refreshsongs();
-    $scope.openWs();
+    $scope.createWsChannel("172.31.8.50", "8080");
+    trackMocks.load().then(function(data) {
+    	$scope.updatePlaylist(data);
+    });
 });

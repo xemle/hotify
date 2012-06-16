@@ -39,17 +39,17 @@
 	        	<div class="clearfix"></div>
         	</div>
 			<ul id="songlist" data-role="listview" data-inset="true" data-split-icon="delete"  data-split-theme="d" >
-				<li ng-repeat="song in songs | paged:{pageSize:3}">
+				<li ng-repeat="track in tracks | paged:{pageSize:3}">
 					<a href="index.html">
-					<img ng-src="{{song.thumbnail}}" width="80" height="80"/>
-					<h3>{{song.title}}</h3>
-					<p>{{song.artist}}</p>
+					<img ng-src="{{track.thumbnail}}" width="80" height="80"/>
+					<h3>{{track.name}}</h3>
+					<p>{{track.album.artist.name}} - {{track.album.name}}</p>
 					<span class="ui-li-count">Votes 5</span></a>
 					<a href="#" data-rel="dialog" data-transition="slideup"></a>
 				</li>
 			</ul>
-            <div ngm-if="songs | paged:'hasMore'">
-                <a href="#" ngm-click="songs | paged:'loadMore'" data-role="button">Load more</a>
+            <div ngm-if="tracks | paged:'hasMore'">
+                <a href="#" ngm-click="tracks | paged:'loadMore'" data-role="button">Load more</a>
             </div>
         </div>
     </div>
@@ -57,7 +57,7 @@
     <div id="search" data-role="page" ngm-swiperight="back()">
         <div data-role="header">
             <h1>Search Track</h1>
-            <a href="" id="saveSettings" data-role="button" data-rel="back">Save</a>
+            <a href="" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
         </div>
 
         <div data-role="content">
@@ -74,12 +74,13 @@
     <div id="settings" data-role="page" ngm-swiperight="back()">
         <div data-role="header">
             <h1>Settings</h1>
-            <a href="" id="saveSettings" data-role="button" data-rel="back">Save</a>
+            <a href="" id="saveSettings" data-role="button" data-rel="back" data-icon="check">Save</a>
         </div>
 
         <div data-role="content">
             <div data-role="fieldcontain">
-                <input type="text" id="storageKey" ng-model="$parent.storageKey" placeholder="enter your storage key here">
+            	<label for="storageKey">Hotify Server Address</label>
+                <input type="text" id="storageKey" ng-model="$parent.storageKey" placeholder="Enter server address here">
             </div>
         </div>
     </div>
