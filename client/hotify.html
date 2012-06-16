@@ -22,30 +22,31 @@
 </head>
 <body>
 <div ng-controller="hotifyController" ng-app="hotify">
-    <div id="main" data-role="page" ngm-swiperight="showSearch()"  ngm-swipeleft="showSettings()">
+    <div id="main" data-role="page" >
         <div data-role="header">
             <h1>Hotify Your Spotify</h1>
             <a href="#search" data-role="button" data-icon="search">Search</a>
-            <a href="#settings" data-role="button" data-icon="gear">Settings</a>
+            <!--  <a href="#settings" data-role="button" data-icon="gear">Settings</a> -->
         </div>
 
         <div data-role="content">
         	<div id="box-active-song" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
-	        	<img ng-src="{{activeSong.thumbnail}}" width="80" height="80"/>
+	        	<img ng-src="{{activeTrack.thumbnail}}" width="80" height="80"/>
 	        	<p class="header">Currently playing...</p>
-	        	<p class="song-title">{{activeSong.title}}</p>
-	        	<p class="song-artist">by {{activeSong.artist}}</p>
-	        	<p class="song-genre">from year {{activeSong.year}}. Genre {{activeSong.genre}}</p>
+	        	<p class="song-title">{{activeTrack.name}}</p>
+	        	<p class="song-artist">by {{activeTrack.album.artist.name}}</p>
+	        	<p class="song-genre">from album {{activeTrack.album.name}}, {{activeTrack.album.year}}</p>
 	        	<div class="clearfix"></div>
         	</div>
+        	
 			<ul id="songlist" data-role="listview" data-inset="true" data-split-icon="delete"  data-split-theme="d" >
-				<li ng-repeat="track in tracks | paged:{pageSize:3}">
-					<a href="index.html">
+				<li ng-repeat="track in tracks | paged:{pageSize:7}" >
+					<a href="" ngm-click="voteTrack(this)">
 					<img ng-src="{{track.thumbnail}}" width="80" height="80"/>
 					<h3>{{track.name}}</h3>
 					<p>{{track.album.artist.name}} - {{track.album.name}}</p>
 					<span class="ui-li-count">Votes 5</span></a>
-					<a href="#" data-rel="dialog" data-transition="slideup"></a>
+					<a href="#" ng-click="deleteTrack(this)" ></a>
 				</li>
 			</ul>
             <div ngm-if="tracks | paged:'hasMore'">
@@ -54,18 +55,17 @@
         </div>
     </div>
 
-    <div id="search" data-role="page" ngm-swiperight="back()">
+    <div id="search" data-role="page" ngm-swipeleft="back()">
         <div data-role="header">
             <h1>Search Track</h1>
-            <a href="" data-role="button" data-rel="back" data-icon="arrow-l">Back</a>
+            <a href="" data-role="button" data-rel="back" data-icon="arrow-r" class="ui-btn-right">Back</a>
         </div>
 
         <div data-role="content">
             <div data-role="fieldcontain">
                 <form data-ajax="false">
-                    <input type="text" id="inputTitle" ng-model="$parent.inputTitle" placeholder="Enter title" ng-model-instant>
-                    <input type="text" id="inputArtist" ng-model="$parent.inputArtist" placeholder="Enter artist" ng-model-instant>
-                    <a ng-click="addsong()" data-role="button" data-icon="search">Search Song</a> 
+                    <input type="text" id="inputText" ng-model="inputText" placeholder="Search your favorite song" ng-model-instant>
+                    <a ng-click="searchTrack()" data-role="button" data-icon="search">Search Song</a> 
                 </form>
             </div>
         </div>

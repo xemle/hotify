@@ -54,22 +54,21 @@ module.factory('songStore', function ($http, $waitDialog, $log) {
 
 module.controller('hotifyController', function ($scope, $navigate, songStore, trackMocks, $log) {
     $scope.storageKey = 'hotify';
-    $scope.activeSong = {title: 'title', artist: 'artist', genre: 'genre'};
+    $scope.activeTrack = {title: 'title', artist: 'artist', genre: 'genre'};
     $scope.tracks = [];
     $scope.inputTitle = '';
     $scope.inputArtist = '';
     $scope.ws = null;
 
-    $scope.addsong = function () {
-        $scope.songs.push({
-        	title: $scope.inputTitle, 
-        	artist: $scope.inputArtist, 
+    $scope.searchTrack = function () {
+        $scope.tracks.push({
+        	title: $scope.inputText, 
+        	artist: $scope.inputText, 
         	thumbnail: '', 
         	genre: '', 
         	done: false});
         $navigate('back');
-        $scope.inputTitle = '';
-        $scope.inputArtist = '';
+        $scope.inputText = '';
     };
     $scope.showSettings = function () {
         $navigate("#settings");
@@ -108,13 +107,26 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, tr
         $scope.songs = newsongs;
         songStore.write($scope.storageKey, $scope.songs);
     };
-
+    
+    $scope.sanitizeNames = function(track) {
+    	track.name = track.name.replace(/&apos;/g, "'");
+    	track.album.name = track.album.name.replace(/\&apos;/g, "'");
+    	track.album.artist.name = track.album.artist.name.replace(/\&apos;/g, "'");
+    	return track;
+    };
+    
     $scope.updatePlaylist = function(data) {
     	var clean = [];
     	for (var i = 0; i < Math.min(data.tracks.length, 20); i++) {
-    		clean.push(data.tracks[i].data);	
-		}
-    	$scope.tracks = clean;
+    		clean.push($scope.sanitizeNames(data.tracks[i].data));	
+    	}
+    	if (clean.length) {
+        	$scope.activeTrack = clean[0];
+        	$scope.tracks = clean.splice(1, clean.length - 1);
+    	} else {
+        	$scope.activeTrack = {};
+        	$scope.tracks = [];
+    	}
     };
     
     /**
@@ -124,6 +136,23 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, tr
     	if (data.eventType == 'PlaylistUpdated') {
     		$scope.updatePlaylist(data);
     	}
+    };
+    
+    $scope.sendWsEvent = function(evt) {
+    	if (!$scope.ws) {
+    		return;
+    	}
+    	$scope.ws.send(JSON.stringify(evt));
+    };
+    
+    $scope.voteTrack = function(e) {
+    	var evt = {type: 'VoteTrack', trackId: e.track.uri};
+    	$scope.sendWsEvent(evt);
+    };
+    
+    $scope.deleteTrack = function(e) {
+    	var evt = {type: 'DeleteTrack', trackId: e.track.uri};
+    	$scope.sendWsEvent(evt);
     };
     
     $scope.createWsChannel = function(host, port) {
@@ -136,14 +165,12 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, tr
         	}
     	};
     	ws.onopen = function() {
+    	    $scope.sendWsEvent({type:"PlayList"});
     		//alert("Websocket is open!");
     	};
-    	//$scope.ws = ws;
+    	$scope.ws = ws;
     };
 //    $scope.refreshActiveSong();
 //    $scope.refreshsongs();
     $scope.createWsChannel("172.31.8.50", "8080");
-    trackMocks.load().then(function(data) {
-    	$scope.updatePlaylist(data);
-    });
 });

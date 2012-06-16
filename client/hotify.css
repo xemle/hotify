@@ -8,6 +8,7 @@
 	display: block;
 	margin: 0 auto;
 	width: 50%;
+	min-width: 280px;
 	position: relative;
 	background-color: white;
 	overflow: hidden;
