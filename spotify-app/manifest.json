@@ -1,14 +1,14 @@
 {
 	"BundleType": "Application",
-	"BundleIdentifier": "tutorial",
+	"BundleIdentifier": "hotify",
 	"AppIcon": {
 		"36x18": "tutorial.png"
 	},
 	"AppName": {
-		"en": "Tutorial"
+		"de": "Hotify"
 	},
 	"SupportedLanguages": [
-		"en"
+		"de"
 	],
 	"RequiredPermissions": [
 		"http://ws.audioscrobbler.com"
