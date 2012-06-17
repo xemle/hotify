@@ -44,3 +44,28 @@ body { padding: 0 20px; }
   margin-bottom: 20px;
   color: #333;
 }
+#songs p {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+#songs .title{
+  font-weight: bold;
+  display: block;
+  position: relative;
+}
+#songs .artist {
+  font-size: 80%;
+}
+#songs .description {
+  font-size: 50%;
+}
+#songs .votes {
+  display: block;
+  float: right;
+  font-weight: normal;
+  font-size: 60%;
+  border: 1px solid #888;
+  background-color: #ddd;
+  padding: 3px;
+  border-radius: 4px;
+}
