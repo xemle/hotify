@@ -3,20 +3,11 @@
 <head>
 	<meta charset="utf-8">
 	<title>My First App</title>
-  <link rel="stylesheet" type="text/css" href="sp://import/css/eve.css">
-	<!-- <link rel="stylesheet" href="sp://import/css/adam.css"> -->
-  <link rel="stylesheet" type="text/css" href="sp://import/css/shared.css">
+	<link rel="stylesheet" href="sp://import/css/adam.css">
 	<link rel="stylesheet" href="tutorial.css">
 </head>
-<body onload="sp = getSpotifyApi(1); hotify = sp.require('hotify'); hotify.init();" >
-<h1>Hotify</h1>
-<div class="content">
-  <div class="room-box">
-    <form src="/">
-      <label for="room">Raum:</label><input id="room" />
-      <input type="submit" />
-    </form>
-  </div>
-</div>
+<body onload="sp = getSpotifyApi(1); tutorial = sp.require('hotify2'); tutorial.init();">
+	<h1 id="header">Hello, world!</h1>
+	<div id="player"></div>
 </body>
 </html>
