@@ -1,0 +1,46 @@
+h1 {
+	text-align: center;
+	font-size: 24px;
+	padding: 20px;
+}
+
+body { padding: 0 20px; }
+
+.content {
+  margin: 0 auto;
+  background: #fff;
+  padding: 10px;
+  text-align: center;
+}
+
+.room-box {
+  font-size: 16pt;
+}
+
+.room-box label {
+  color: #333;
+  font-size: 10pt;
+}
+.room-box input {
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 10pt;
+  padding: 4px;
+  border-radius: 3px;
+}
+
+#songs .song {
+  padding: 20px;
+  border-top: 1px solid #ddd;
+  background: -webkit-linear-gradient(top, #f2f2f2 0%,#eaeaea 100%);
+  text-align: left;
+}
+
+#songs { text-align: left; }
+#songs .small { color: #333; font-size: 10pt; margin: 0 0 3px 2px; }
+#songs .song.active {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  margin-bottom: 20px;
+  color: #333;
+}

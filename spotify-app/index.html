@@ -1,13 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>My First App</title>
-	<link rel="stylesheet" href="sp://import/css/adam.css">
-	<link rel="stylesheet" href="tutorial.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
+    <title>Hotify Your Spotify</title>
+    <link rel="stylesheet" href="javascript/jQuery/jquery.mobile-1.1.0.css" />
+
+	<link rel="stylesheet" type="text/css" href="sp://import/css/shared.css">
+    <link rel="stylesheet" type="text/css" href="sp://import/css/eve.css">
+    <link rel="stylesheet" href="hotify.css" />
+    
+    <script type="text/javascript" src="javascript/app.js"></script>
+
 </head>
-<body onload="sp = getSpotifyApi(1); tutorial = sp.require('hotify2'); tutorial.init();">
-	<h1 id="header">Hello, world!</h1>
-	<div id="player"></div>
+<body>
+<h1>Hotify</h1>
+<div class="content">
+
+  <div class="room-box" id="songs">
+    
+  </div>
+
+</div>
+
 </body>
 </html>
