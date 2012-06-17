@@ -63,9 +63,5 @@ body { padding: 0 20px; }
   display: block;
   float: right;
   font-weight: normal;
-  font-size: 60%;
-  border: 1px solid #888;
-  background-color: #ddd;
   padding: 3px;
-  border-radius: 4px;
 }

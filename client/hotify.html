@@ -18,6 +18,9 @@
             width: 100% !important;
             padding: 0.4em 0 !important;
         }
+        .ui-li-count {
+        	font-size: 150% !important;
+        }
     </style>
 </head>
 <body>
@@ -45,7 +48,7 @@
 					<img ng-src="{{track.thumbnail}}" />
 					<h3>{{track.name}}</h3>
 					<p>{{track.album.artist.name}} - {{track.album.name}}</p>
-					<span class="ui-li-count">Votes {{track.votes}}</span></a>
+					<span class="ui-li-count">{{track.votes}}</span></a>
 				</li>
 			</ul>
             <div ngm-if="tracks | paged:'hasMore'">

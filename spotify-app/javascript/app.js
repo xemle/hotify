@@ -31,7 +31,7 @@ function partyRender(event) {
   for(var i = 1, l = app.playlist().length; i < l; i++) {
     var track = app.playlist().get(i);
     var votes = app.votes[track.uri] || 0;
-    var s = '<div class="song"><p class="title">'+track.name +'<span class="votes">'+votes+' votes</span><p><p class="artist">'+track.album.artist.name+'</p><p class="description">'+track.album.name+'</p></div>';
+    var s = '<div class="song"><p class="title">'+track.name +'<span class="votes">'+votes+'</span><p><p class="artist">'+track.album.artist.name+'</p><p class="description">'+track.album.name+'</p></div>';
     div.append(s);
   }
   
