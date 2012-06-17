@@ -41,7 +41,7 @@ function connect() {
 }
 
 function onMsg(event) {
-  console.log("onMsg: ", event, JSON.parse(event.data));
+  console.log("onMsg: ", event, event.data, JSON.parse(event.data));
   //displayPlaylist();
 }
 
@@ -52,23 +52,23 @@ function onPlayerChange(event) {
   // }
 }
 
-// function search(query, cb) {
-//   var search = new models.Search(query);
-//   search.localResults = models.LOCALSEARCHRESULTS.APPEND;
+exports.search = function search(query, cb) {
+  var search = new models.Search(query);
+  search.localResults = models.LOCALSEARCHRESULTS.APPEND;
 
-//   search.observe(models.EVENT.CHANGE, function() {
-//     search.tracks.forEach(function(track) {
-//       //console.log(track.name);
-//       playlist.add(track);
-//     });
+  search.observe(models.EVENT.CHANGE, function() {
+    search.tracks.forEach(function(track) {
+      console.log(track.name);
+      //playlist.add(track);
+    });
+    cb(search.tracks);
+    //console.log(player, search.tracks[0], playlist, playlist.get(0), playlist.get(2));
+    //player.play(search.tracks[0], playlist);
 
-//     console.log(player, search.tracks[0], playlist, playlist.get(0), playlist.get(2));
-//     player.play(search.tracks[0], playlist);
+  });
 
-//   });
-
-//   search.appendNext();
-// }
+  search.appendNext();
+}
 
 // function displayPlaylist(trackArray) {
 
