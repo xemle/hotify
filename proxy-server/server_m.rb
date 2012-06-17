@@ -81,7 +81,14 @@ class ServerM
         id = track[0]["data"]["album"]["cover"]
         track[0]["data"]["thumbnail"] = @lib.get_cover(id)
       else
-        id = track["data"]["album"]["cover"]
+        #puts "ttt: " + track.inspect
+        
+        begin
+          id = track["data"]["album"]["cover"]
+          id = track["data"]["album"]["cover"]
+        rescue
+          id = "spotify:track:7bjpERQ3NwtE65H2aMBjtD"
+        end
         track["data"]["thumbnail"] = @lib.get_cover(id)
       end
     end
@@ -90,15 +97,15 @@ class ServerM
   end
 
   def get_track_img(id)
-    @img_cach.fetch(id) do
+    #@img_cach.fetch(id) do
       @img_cach[id] = @lib.get_track_img(id) 
-    end
+    #end
   end
 
   def get_cover(id)
-    @img_cach.fetch(id) do
+    #@img_cach.fetch(id) do
       @img_cach[id] = @lib.get_cover(id) 
-    end
+    #end
   end
 
   def get_last_plst

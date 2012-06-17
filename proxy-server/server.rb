@@ -62,7 +62,8 @@ EventMachine.run {
       puts "ffuuururur"
       ws.send( plst.to_json ) unless plst.nil?
 
-      ws.onmessage { |msg| 
+      ws.onmessage { |msg|
+        puts "from #{sid}:" 
         recipient, data = @server.act(msg)
 
         case recipient
