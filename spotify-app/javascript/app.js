@@ -25,20 +25,20 @@ function partyRender(event) {
     div.append(s);
   }
   
-  for(var i = 0, l = app.playlist.length; i < l; i++) {
-    var track = app.playlist.get(i);
+  for(var i = 1, l = app.playlist().length; i < l; i++) {
+    var track = app.playlist().get(i);
     var votes = app.votes[track.uri] || 0;
     var s = '<div class="song">'+track.name+' ' + votes+'</div>'
     div.append(s);
   }
   
-  var player = new views.Player();
-  player.context = playlist;
-  player.track = playlist.get(0);
-  $("body").append(player.node);
+  // var player = new views.Player();
+  // player.context = app.playlist();
+  // player.track = app.playlist().get(0);
+  // $("body").append(player.node);
 }
 
-app.playlist.observe(models.EVENT.CHANGE, function(e){
+app.playlist().observe(models.EVENT.CHANGE, function(e){
   console.log("event1");
   //(function(){partyRender(e);})();
   partyRender(e);

@@ -9,17 +9,21 @@ var views = sp.require("sp://import/scripts/api/views");
 
 var server = "172.31.8.50:8080";
 var ws = null;
-playlist = new models.Playlist();
+
+GlobPlaylist = new models.Playlist();
 
 votes = {};
 exports.votes = votes;
 
 exports.init = init;
-exports.playlist = playlist;
+exports.playlist = function() {
+	return GlobPlaylist;
+};
 
 
 
 function PlaylistUpdateEvent(tracks) {
+	console.log("aiaiaia", tracks)
 	this.eventType = "PlaylistUpdated";
 	this.size = tracks.length;
 	this.tracks = tracks;
@@ -47,9 +51,12 @@ function init() {
 	connectWS(function() {
 		createPlaylist("Modern Talking", startPlayback);
 	});
-	models.player.observe(models.EVENT.CHANGE, onPlayerChange);
+	models.player.observe(models.EVENT.CHANGE, function(event) {
+		console.log("#### new song");
+		onPlayerChange(event);
+	});
 	//playlist.observe(models.EVENT.CHANGE, onPlaylistChange);
-	playlist.observe(models.EVENT.CHANGE, function(event) {
+	GlobPlaylist.observe(models.EVENT.CHANGE, function(event) {
 		//console.log("here 2");
 		onPlaylistChangeEvent(event);
 	});
@@ -82,10 +89,10 @@ function onRequest(event){
 	console.log("onRq", event);
 	var request = JSON.parse(event.data)
 	console.log("Received a query: "+request.requestType);
-	var playlist = (function(){return this.playlist;})();
+	
 	var track = (function(){return models.player.track;})();
 	if(request.requestType == "PlayList"){
-		var tracks = playlist.tracks;
+		var tracks = GlobPlaylist.tracks;
 		sendMessage(new PlaylistUpdateEvent(tracks));
 	} 
 	if(request.requestType == "CurrentTrack"){
@@ -93,19 +100,19 @@ function onRequest(event){
 	}
 	if(request.requestType == "QuickShow"){
 		var res = [];
-		for(var i in playlist.tracks){
-			res.push(playlist.tracks[i].name);
+		for(var i in GlobPlaylist.tracks){
+			res.push(GlobPlaylist.tracks[i].name);
 		}
 		sendMessage(new PlaylistShortEvent(res));
 	}
 	if(request.requestType == "AddTrack"){
-		playlist.add(request.trackId);
-		//sendMessage(new PlaylistUpdateEvent(playlist.tracks));
+		GlobPlaylist.add(request.trackId);
+		sendMessage(new PlaylistUpdateEvent(playlist.tracks));
 	}
 	if(request.requestType == "VoteTrack"){
 		console.log("Got it");
 		voteForTrack(request.trackId);
-		var tracks = playlist.tracks;
+		var tracks = GlobPlaylist.tracks;
 		for(var index in tracks){
 			console.log("Before: ",tracks[index].name, votes[tracks[index].uri]);
 		}
@@ -128,14 +135,14 @@ function onRequest(event){
 		})(newPlaylist);		
 		sendMessage(new PlaylistUpdateEvent(newPlaylist.tracks));
 		*/
-		for (var i=playlist.length-1; i>0; i--) { 
-			playlist.remove(playlist.get(i)) 
+		for (var i=GlobPlaylist.length-1; i>0; i--) { 
+			GlobPlaylist.remove(GlobPlaylist.get(i)) 
 		}
 		
 		for (var i=1; i<newPlaylist.length; i++) {
-			playlist.add(newPlaylist.get(i).uri);
+			GlobPlaylist.add(newPlaylist.get(i).uri);
 		}
-		sendMessage(new PlaylistUpdateEvent(playlist.tracks));
+		sendMessage(new PlaylistUpdateEvent(GlobPlaylist.tracks));
 	}
 }
 
@@ -155,32 +162,38 @@ function sendMessage(object) {
 
 function onPlaylistChangeEvent(event) {
 	console.log("*** playlist changed");
-	sendMessage(new PlaylistUpdateEvent(playlist.tracks));
+	sendMessage(new PlaylistUpdateEvent(GlobPlaylist.tracks));
 }
 
 function onPlayerChange(event){
 	if(event.data.curtrack == true){
 		sendMessage(new PlayerChangeEvent(models.player.track));
 	}
+	/*
 	var currentTrackId = models.player.track.uri;
 	var newTrackList = [];
 	var includeTrack = false;
-	var playlist = (function(){return this.playlist;})();
-	for(var index in playlist.tracks){
-		var track = playlist.tracks[index];
+	
+	for(var index in GlobPlaylist.tracks){
+		var track = GlobPlaylist.tracks[index];
 		if(track.uri == currentTrackId && includeTrack == false){
 			includeTrack = true;
 		}
 		if(includeTrack){
 			newTrackList.push(track);
 		}
+	}*/
+
+	//var tmp = [];
+	//tmp.push(GlobPlaylist.tracks);
+
+	if (models.player.index > 0) {
+		var first = GlobPlaylist.get(0);
+		GlobPlaylist.remove(first);
 	}
-	playlist.tracks = newTrackList;
-	(function(playlist) {
-		this.playlist = playlist;
-	})(playlist);
 	
-	sendMessage(new PlaylistUpdateEvent(newTrackList));
+
+	sendMessage(new PlaylistUpdateEvent(GlobPlaylist.tracks));
 }
 
 function startPlayback(playlist, tracks){
@@ -202,15 +215,11 @@ function createPlaylist(query, callback){
 		//var playlist = new models.Playlist();
 		var tracks = [];
 		search.tracks.forEach(function(track) {
-			playlist.add(track);
+			GlobPlaylist.add(track);
 			tracks.push(track);
 		});
-
-		(function(playlist) {
-			this.playlist = playlist;
-		})(playlist);
 		
-		callback(playlist, tracks);
+		callback(GlobPlaylist, tracks);
 		
 	});
 	search.appendNext();
@@ -221,7 +230,7 @@ function createPlaylist(query, callback){
 */
 
 function voteForTrack(trackid){
-	var playlist = (function(){return this.playlist;})();
+	
 	var votes  = (function(){return this.votes;})();
 	if(!(trackid in votes) ){
 		votes[trackid] = 1;
