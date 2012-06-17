@@ -64,10 +64,19 @@
         <div data-role="content">
             <div data-role="fieldcontain">
                 <form data-ajax="false">
-                    <input type="text" id="inputText" ng-model="inputText" placeholder="Search your favorite song" ng-model-instant>
+                    <input type="text" id="inputText" ng-model="$parent.inputText" placeholder="Search your favorite song" ng-model-instant>
                     <a ng-click="searchTrack()" data-role="button" data-icon="search">Search Song</a> 
                 </form>
             </div>
+
+			<ul id="searchResult" data-role="listview" data-inset="true" data-split-icon="delete"  data-split-theme="d" >
+				<li ng-repeat="result in results | paged:{pageSize:10}" >
+					<a href="" ngm-click="addTrack(this)">
+					<img ng-src="{{result.thumbnail}}" width="80" height="80"/>
+					<h3>{{result.title}}</h3>
+					<p>{{result.artist}} ({{result.album}})</p>
+				</li>
+			</ul>
         </div>
     </div>
 

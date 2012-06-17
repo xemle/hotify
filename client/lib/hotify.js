@@ -56,20 +56,10 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, tr
     $scope.storageKey = 'hotify';
     $scope.activeTrack = {title: 'title', artist: 'artist', genre: 'genre'};
     $scope.tracks = [];
-    $scope.inputTitle = '';
-    $scope.inputArtist = '';
+    $scope.results = [];
+    $scope.inputText = '';
     $scope.ws = null;
 
-    $scope.searchTrack = function () {
-        $scope.tracks.push({
-        	title: $scope.inputText, 
-        	artist: $scope.inputText, 
-        	thumbnail: '', 
-        	genre: '', 
-        	done: false});
-        $navigate('back');
-        $scope.inputText = '';
-    };
     $scope.showSettings = function () {
         $navigate("#settings");
     };
@@ -129,32 +119,55 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, tr
     	}
     };
     
+    $scope.updateSearchResult = function(data) {
+    	var clean = [];
+    	for (var i = 0; i < Math.min(data.data.length, 20); i++) {
+    		clean.push(data.data[i]);	
+    	}
+    	if (clean.length) {
+        	$scope.results = clean;
+    	} else {
+        	$scope.results = [];
+    	}
+    };
+    
     /**
      * Dispatch WebSocket Events
      */
     $scope.dispatchWsData = function(data) {
-    	$log.log("eventType: " + data.eventType);
-    	$log.log("eventType: " + JSON.stringify(data));
     	if (data.eventType == 'PlaylistUpdated') {
     		$scope.updatePlaylist(data);
+    	} else if (data.eventType == 'Search') {
+    		$scope.updateSearchResult(data);
     	}
     };
     
-    $scope.sendWsEvent = function(evt) {
+    $scope.sendWsRequest = function(req) {
     	if (!$scope.ws) {
     		return;
     	}
-    	$scope.ws.send(JSON.stringify(evt));
+    	$scope.ws.send(JSON.stringify(req));
     };
     
     $scope.voteTrack = function(e) {
-    	var evt = {requestType: 'VoteTrack', trackId: e.track.uri};
-    	$scope.sendWsEvent(evt);
+    	var req = {requestType: 'VoteTrack', trackId: e.track.uri};
+    	$scope.sendWsRequest(req);
     };
     
     $scope.deleteTrack = function(e) {
-    	var evt = {requestType: 'DeleteTrack', trackId: e.track.uri};
-    	$scope.sendWsEvent(evt);
+    	var req = {requestType: 'DeleteTrack', trackId: e.track.uri};
+    	$scope.sendWsRequest(req);
+    };
+
+    $scope.searchTrack = function () { 
+    	var req = {requestType: 'Search', query: $scope.inputText};
+    	$scope.sendWsRequest(req);
+    };
+
+    $scope.addTrack = function (e) { 
+    	var req = {requestType: 'AddTrack', trackId: e.result.id};
+    	$scope.sendWsRequest(req);
+        $navigate('#main');
     };
     
     $scope.createWsChannel = function(host, port) {
@@ -167,7 +180,7 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, tr
         	}
     	};
     	ws.onopen = function() {
-    	    $scope.sendWsEvent({requestType:"PlayList"});
+    	    $scope.sendWsRequest({requestType:"PlayList"});
     		//alert("Websocket is open!");
     	};
     	$scope.ws = ws;
