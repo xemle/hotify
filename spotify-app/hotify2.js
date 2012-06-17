@@ -33,7 +33,7 @@ function WebsocketQuery(queryFor, trackid){
 function init() {
 	console.log("init()");
 	connectWS(function() {
-		createPlaylist("Man o War", startPlayback);
+		createPlaylist("Modern Talking", startPlayback);
 	});
 	models.player.observe(models.EVENT.CHANGE, onPlayerChange);
 }
@@ -44,7 +44,10 @@ function init() {
 function connectWS(callback) {
   ws = new WebSocket("ws://" + server);
   ws.onmessage = onRequest;
-  ws.onclose = function() { console.log("socket closed"); };
+  ws.onclose = function(data) { 
+	  console.log("socket closed ");
+	  console.log(data);
+  };
   ws.onopen = function() {
     console.log("connected");
 	callback();
@@ -55,7 +58,7 @@ function connectWS(callback) {
 }
 
 function onRequest(event){
-	console.log(event)
+	console.log("onRq", event);
 	var request = JSON.parse(event.data)
 	console.log("Received a query: "+request.requestType);
 	var playlist = (function(){return this.playlist;})();
@@ -70,7 +73,7 @@ function onRequest(event){
 	if(request.requestType == "QuickShow"){
 		var res = [];
 		for(var i in playlist.tracks){
-			res.push(playlist.tracks[i].name)
+			res.push(playlist.tracks[i].name);
 		}
 		sendMessage(new PlaylistShortEvent(res));
 	}
@@ -103,7 +106,7 @@ function onRequest(event){
 function sendMessage(object) {
 	console.log("Object type " +object.eventType);
 	var json = JSON.stringify(object);
-	//console.log("send message " + json);
+	console.log("send message ", json);
 	ws.send(json);
 	console.log("message send");
 }
@@ -116,8 +119,8 @@ function onPlayerChange(event){
 	if(event.data.curtrack == true){
 		sendMessage(new PlayerChangeEvent(models.player.track));
 	}
-	var currentTrackId = models.player.track.uri
-	var newTrackList = []
+	var currentTrackId = models.player.track.uri;
+	var newTrackList = [];
 	var includeTrack = false;
 	var playlist = (function(){return this.playlist;})();
 	for(var index in playlist.tracks){
@@ -126,7 +129,7 @@ function onPlayerChange(event){
 			includeTrack = true;
 		}
 		if(includeTrack){
-			newTrackList.push(track)
+			newTrackList.push(track);
 		}
 	}
 	playlist.tracks = newTrackList;
@@ -155,7 +158,7 @@ function createPlaylist(query, callback){
 		var playlist = new models.Playlist();
 		var tracks = [];
 		search.tracks.forEach(function(track) {
-			playlist.add(track)
+			playlist.add(track);
 			tracks.push(track);
 		});
 		
@@ -163,7 +166,7 @@ function createPlaylist(query, callback){
 			this.playlist = playlist;
 		})(playlist);
 		
-		callback(playlist, tracks)
+		callback(playlist, tracks);
 		
 	});
 	search.appendNext();
@@ -177,7 +180,7 @@ function voteForTrack(trackid){
 	var playlist = (function(){return this.playlist;})();
 	var votes  = (function(){return this.votes;})();
 	if(!(trackid in votes) ){
-		votes[trackid] = 1
+		votes[trackid] = 1;
 	} else {
 		votes[trackid] = votes[trackid]+1;
 	}
