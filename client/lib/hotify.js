@@ -133,6 +133,8 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, tr
      * Dispatch WebSocket Events
      */
     $scope.dispatchWsData = function(data) {
+    	$log.log("eventType: " + data.eventType);
+    	$log.log("eventType: " + JSON.stringify(data));
     	if (data.eventType == 'PlaylistUpdated') {
     		$scope.updatePlaylist(data);
     	}
@@ -146,12 +148,12 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, tr
     };
     
     $scope.voteTrack = function(e) {
-    	var evt = {type: 'VoteTrack', trackId: e.track.uri};
+    	var evt = {requestType: 'VoteTrack', trackId: e.track.uri};
     	$scope.sendWsEvent(evt);
     };
     
     $scope.deleteTrack = function(e) {
-    	var evt = {type: 'DeleteTrack', trackId: e.track.uri};
+    	var evt = {requestType: 'DeleteTrack', trackId: e.track.uri};
     	$scope.sendWsEvent(evt);
     };
     
@@ -165,10 +167,17 @@ module.controller('hotifyController', function ($scope, $navigate, songStore, tr
         	}
     	};
     	ws.onopen = function() {
-    	    $scope.sendWsEvent({type:"PlayList"});
+    	    $scope.sendWsEvent({requestType:"PlayList"});
     		//alert("Websocket is open!");
     	};
     	$scope.ws = ws;
+    };
+    
+    $scope.fixHeaderWidth = function() {
+    	var minWidth = $('#main').width();
+    	if (minWidth < 500) {
+    		$('#box-active-song').css('min-width', minWidth - 20);	
+    	} 
     };
 //    $scope.refreshActiveSong();
 //    $scope.refreshsongs();
