@@ -1,5 +1,25 @@
 var module = angular.module("hotify", []);
 
+module.factory('wsService', function ($scope) {
+	
+});
+
+module.factory('trackMocks', function ($http, $waitDialog, $log) {
+    var mockUrl = 'tracks.json';
+    function load(key) {
+        return $http({
+            method: 'GET',
+            url: mockUrl
+        }).then(function (response) {
+            return response.data;
+        });
+    }
+    
+    return {
+    	load: load
+    };    
+});
+
 module.factory('songStore', function ($http, $waitDialog, $log) {
     var readUrl = 'http://172.31.8.13:8080/hotify-server/services/';
     var writeUrl = readUrl;
@@ -29,30 +49,32 @@ module.factory('songStore', function ($http, $waitDialog, $log) {
     return {
         read:read,
         write:write
-    }
+    };
 });
 
-module.controller('hotifyController', function ($scope, $navigate, songStore) {
+module.controller('hotifyController', function ($scope, $navigate, songStore, trackMocks, $log) {
     $scope.storageKey = 'hotify';
-    $scope.activeSong = {};
-    $scope.songs = [];
+    $scope.activeTrack = {title: 'title', artist: 'artist', genre: 'genre'};
+    $scope.tracks = [];
     $scope.inputTitle = '';
     $scope.inputArtist = '';
+    $scope.ws = null;
 
-    $scope.addsong = function () {
-        $scope.songs.push({
-        	title: $scope.inputTitle, 
-        	artist: $scope.inputArtist, 
+    $scope.searchTrack = function () {
+        $scope.tracks.push({
+        	title: $scope.inputText, 
+        	artist: $scope.inputText, 
         	thumbnail: '', 
         	genre: '', 
         	done: false});
         $navigate('back');
-        $scope.inputTitle = '';
-        $scope.inputArtist = '';
-        $('#songlist').listview('refresh');
+        $scope.inputText = '';
     };
     $scope.showSettings = function () {
         $navigate("#settings");
+    };
+    $scope.showSearch = function () {
+        $navigate("#search");
     };
     $scope.back = function () {
         $navigate('back');
@@ -85,7 +107,70 @@ module.controller('hotifyController', function ($scope, $navigate, songStore) {
         $scope.songs = newsongs;
         songStore.write($scope.storageKey, $scope.songs);
     };
-
-    $scope.refreshActiveSong();
-    $scope.refreshsongs();
+    
+    $scope.sanitizeNames = function(track) {
+    	track.name = track.name.replace(/&apos;/g, "'");
+    	track.album.name = track.album.name.replace(/\&apos;/g, "'");
+    	track.album.artist.name = track.album.artist.name.replace(/\&apos;/g, "'");
+    	return track;
+    };
+    
+    $scope.updatePlaylist = function(data) {
+    	var clean = [];
+    	for (var i = 0; i < Math.min(data.tracks.length, 20); i++) {
+    		clean.push($scope.sanitizeNames(data.tracks[i].data));	
+    	}
+    	if (clean.length) {
+        	$scope.activeTrack = clean[0];
+        	$scope.tracks = clean.splice(1, clean.length - 1);
+    	} else {
+        	$scope.activeTrack = {};
+        	$scope.tracks = [];
+    	}
+    };
+    
+    /**
+     * Dispatch WebSocket Events
+     */
+    $scope.dispatchWsData = function(data) {
+    	if (data.eventType == 'PlaylistUpdated') {
+    		$scope.updatePlaylist(data);
+    	}
+    };
+    
+    $scope.sendWsEvent = function(evt) {
+    	if (!$scope.ws) {
+    		return;
+    	}
+    	$scope.ws.send(JSON.stringify(evt));
+    };
+    
+    $scope.voteTrack = function(e) {
+    	var evt = {type: 'VoteTrack', trackId: e.track.uri};
+    	$scope.sendWsEvent(evt);
+    };
+    
+    $scope.deleteTrack = function(e) {
+    	var evt = {type: 'DeleteTrack', trackId: e.track.uri};
+    	$scope.sendWsEvent(evt);
+    };
+    
+    $scope.createWsChannel = function(host, port) {
+    	var ws = new WebSocket("ws://" + host + ":" + port);
+    	ws.onmessage = function(evt) {
+        	if (evt.data) {
+        		var data = JSON.parse(evt.data);
+        		$scope.dispatchWsData(data);
+        		$scope.$apply();
+        	}
+    	};
+    	ws.onopen = function() {
+    	    $scope.sendWsEvent({type:"PlayList"});
+    		//alert("Websocket is open!");
+    	};
+    	$scope.ws = ws;
+    };
+//    $scope.refreshActiveSong();
+//    $scope.refreshsongs();
+    $scope.createWsChannel("172.31.8.50", "8080");
 });

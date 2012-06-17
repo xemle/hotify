@@ -1,0 +1,44 @@
+/* jQuery mobile fixes */
+
+.ui-li-count {
+	margin-right: 10px;
+}
+
+#box-active-song {
+	display: block;
+	margin: 0 auto;
+	width: 50%;
+	min-width: 280px;
+	position: relative;
+	background-color: white;
+	overflow: hidden;
+}
+#box-active-song img {
+	float: left;
+	margin: 10px;
+	width: 120px;
+	height: 120px;
+}
+#box-active-song p {
+	margin: 0;
+	margin-left: 140px;
+	margin-bottom: 5px;
+}
+#box-active-song p.header {
+	padding-top: 10px;
+	font-size: 70%;
+	color: #888;
+}
+#box-active-song p.song-title {
+	font-size: 200%;
+	font-weight: bold;
+	text-shadow: #ddd 2px 2px 1px;
+}
+#box-active-song p.song-genre {
+	color: #888;
+	font-size: 70%;
+}
+.clearfix {
+	display: block;
+	clear: both;
+}
