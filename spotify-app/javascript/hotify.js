@@ -110,21 +110,21 @@ function onRequest(event){
 		sendMessage(new PlaylistUpdateEvent(playlist.tracks));
 	}
 	if(request.requestType == "VoteTrack"){
-		console.log("Got it");
+		//console.log("Got it");
 		voteForTrack(request.trackId);
 		var tracks = GlobPlaylist.tracks;
 		for(var index in tracks){
-			console.log("Before: ",tracks[index].name, votes[tracks[index].uri]);
+			//console.log("Before: ",tracks[index].name, votes[tracks[index].uri]);
 		}
 		var t0 = tracks.shift();
 		tracks.sort(sortPlaylist);
 		tracks.unshift(t0);
 		for(var index in tracks){
-			console.log("After: ", tracks[index].name, votes[tracks[index].uri]);
+			//console.log("After: ", tracks[index].name, votes[tracks[index].uri]);
 		}
 		var newPlaylist = new models.Playlist();
 		for(var index=0; index<tracks.length; index++){
-			console.log("Adding", tracks[index].name, tracks[index]);
+			//console.log("Adding", tracks[index].name, tracks[index]);
 			newPlaylist.add(tracks[index]);
 		}
 		/*models.player.context = newPlaylist;
@@ -159,7 +159,6 @@ function sendMessage(object) {
 /*
 * Spotify functions
 */
-
 function onPlaylistChangeEvent(event) {
 	console.log("*** playlist changed");
 	sendMessage(new PlaylistUpdateEvent(GlobPlaylist.tracks));
@@ -191,7 +190,6 @@ function onPlayerChange(event){
 		var first = GlobPlaylist.get(0);
 		GlobPlaylist.remove(first);
 	}
-	
 
 	sendMessage(new PlaylistUpdateEvent(GlobPlaylist.tracks));
 }
@@ -243,7 +241,7 @@ function sortPlaylist(trackA, trackB){
 	var votes  = (function(){return this.votes;})();
 	var votesA = votes[trackA.uri] || 0;
 	var votesB = votes[trackB.uri] || 0;
-	console.log("Received:", votes, votesA, votesB);
-	console.log("Will sort with: ", votesB - votesA);
+	//console.log("Received:", votes, votesA, votesB);
+	//console.log("Will sort with: ", votesB - votesA);
 	return votesB - votesA; 
 }

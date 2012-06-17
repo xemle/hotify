@@ -39,12 +39,12 @@ function partyRender(event) {
 }
 
 app.playlist().observe(models.EVENT.CHANGE, function(e){
-  console.log("event1");
+  //console.log("event1");
   //(function(){partyRender(e);})();
   partyRender(e);
 });
 models.player.observe(models.EVENT.CHANGE, function(e) {
-  console.log("event2", partyRender);
+  //console.log("event2", partyRender);
   partyRender(e);
 });
 
