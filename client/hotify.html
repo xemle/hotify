@@ -39,13 +39,13 @@
 	        	<div class="clearfix"></div>
         	</div>
         	
-			<ul id="songlist" data-role="listview" data-inset="true" data-theme="c"  data-split-icon="array-l">
-				<li ng-repeat="track in tracks | paged:{pageSize:7}">
+			<ul id="songlist" data-role="listview" data-inset="true" data-theme="c"  >
+				<li ng-repeat="track in tracks | paged:{pageSize:7}" data-icon="add">
 					<a href="" ngm-click="voteTrack(this)">
 					<img ng-src="{{track.thumbnail}}" />
 					<h3>{{track.name}}</h3>
 					<p>{{track.album.artist.name}} - {{track.album.name}}</p>
-					<span class="ui-li-count">Votes 5</span></a>
+					<span class="ui-li-count">Votes {{track.votes}}</span></a>
 				</li>
 			</ul>
             <div ngm-if="tracks | paged:'hasMore'">

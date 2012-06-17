@@ -50,10 +50,25 @@ module.controller('hotifyController', function ($scope, $navigate, trackMocks, $
     	return track;
     };
     
+    $scope.mergeVotes = function(tracks, votes) {
+    	if (!tracks) {
+    		return tracks;
+    	}
+    	for (var i = 0; i < tracks.length; i++) {
+    		var trackId = tracks[i].data.uri;
+			tracks[i].data.votes = votes && votes[trackId] ? votes[trackId] : 0;
+    	}
+    	return tracks;
+    };
+    
     $scope.updatePlaylist = function(data) {
     	var clean = [];
-    	for (var i = 0; i < Math.min(data.tracks.length, 20); i++) {
-    		clean.push($scope.sanitizeNames(data.tracks[i].data));	
+    	var tracks = $scope.mergeVotes(data.tracks, data.votes);
+    	if (!tracks) {
+    		return clean;
+    	}
+    	for (var i = 0; i < Math.min(tracks.length, 20); i++) {
+    		clean.push($scope.sanitizeNames(tracks[i].data));	
     	}
     	if (clean.length) {
         	$scope.activeTrack = clean[0];
