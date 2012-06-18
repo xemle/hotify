@@ -18,26 +18,42 @@ exports.init = function(_connection, _playlist) {
 function render(event) {
   console.log("render");
 
-  var div = $("#songs");
+  var div = $("#playlist");
   div.empty();
 
   if (models.player.track) {
     var track = models.player.track;
     var votes = playlist.votes[track.uri] || 0;
-    var s = '<p class="small">Aktueller Titel:</p><div class="song active"><p class="title">'+track.name +'<p><p class="artist">'+track.album.artist.name+'</p><p class="description">'+track.album.name+'</p></div>';
-    div.append(s);
+    
+    var now = $("#current-song")
+    now.find(".title").html(track.name);
+    now.find(".artist").html(track.album.artist.name);
+    //now.find(".album").html(track.album.name);
+    now.prepend('<img class="cover" src="'+track.data.album.cover+'" />')
   }
   
   var list = playlist.list.data;
 
-  if (list.length) {
-    div.append('<p class="small">Queue:</p>');
-  }
   for(var i = 1, l = list.length; i < l; i++) {
     var track = list.getTrack(i);
     var votes = playlist.votes[track.uri] || 0;
-    var s = '<div class="song"><p class="title">'+track.name +'<span class="votes">'+votes+'</span><p><p class="artist">'+track.album.artist.name+'</p><p class="description">'+track.album.name+'</p></div>';
-    div.append(s);
+
+    var song = $('<div class="song"></div>');
+    var vote = $('<div class="votes">'+votes+'</div>')
+    var title = $('<div class="title">'+track.name +'<div>');
+    
+    var description = $('<div class="description"></div>');
+    var artist = $('<span class="artist">'+track.artists[0].name+'</span>');
+    var album = $('<p class="description">'+track.album.name+'</p>');
+    
+    song.append(vote);
+    song.append(title);
+    song.append(description)
+
+    description.append(artist);
+    description.append(album);
+
+    div.append(song);
   }
   
   var track = playlist.list.data.getTrack(0);

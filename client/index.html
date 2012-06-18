@@ -1,69 +1,102 @@
-<!DOCTYPE html> 
-<html> 
-	<head> 
-	<title>Page Title</title> 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
+    <title>Hotify Your Spotify</title>
+    <link rel="stylesheet" href="lib/jQuery/jquery.mobile-1.1.0.css" />
+
+    <script src="lib/jQuery/jquery-1.7.1.min.js"></script>
+    <script src="lib/jQuery/jquery.mobile-1.1.0.min.js"></script>
+    <script src="lib/angular-1.0.0.min.js"></script>
+    <script src="lib/jquery-mobile-angular-adapter.js"></script>
+    <script src="lib/hotify.js"></script>
+	<link rel="stylesheet" href="hotify.css" />
 	
-	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <style>
+        .ui-input-text,
+        .ui-select {
+            width: 100% !important;
+            padding: 0.4em 0 !important;
+        }
+        .ui-li-count {
+        	font-size: 150% !important;
+        }
+    </style>
+</head>
+<body>
+<div ng-controller="hotifyController" ng-app="hotify">
+    <div id="main" data-role="page" ngm-pageshow="fixHeaderWidth()">
+        <div data-role="header">
+            <h1>Hotify Your Spotify</h1>
+            <a href="#search" data-role="button" data-icon="search">Search</a>
+            <!--  <a href="#settings" data-role="button" data-icon="gear">Settings</a> -->
+        </div>
 
-	<link rel="stylesheet" href="./lib/jQuery/jquery.mobile-1.1.0.min.css" />
-	<script src="./lib/jQuery/jquery-1.7.1.min.js"></script>
-	<script src="./lib/jQuery/jquery.mobile-1.1.0.min.js"></script>
-	<script src="./lib/knockout/knockout-2.1.0.min.js"></script>
-	
-	<script src="./model/song.js"></script>
-	<script src="./controller/dataExchange.js"></script>
-</head> 
-
-<body> 
-	<div data-role="page">
-
-	<div data-role="header">
-		<h1>Hotify</h1>
-	</div><!-- /header -->
-
-	<div data-role="content">	
-			<table style="width:70%; margin: auto;" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
-			  <caption style="font-size:30px">Now Playing</caption>
-			  <tbody>
-				  <tr>
-				  	<td rowspan="6"><img width="128px" height="128px" data-bind="attr:{src: thumbnail}"/></td>
-				    <td align="right">Song</th>
-				    <td style="font-weight:bold"><span data-bind='text: title'></span></td>
-				  </tr>
-				  <tr>
-				    <td align="right">Artist</th>
-				    <td style="font-weight:bold"><span data-bind='text: interpret'></span></td>
-				  </tr>
-				  <tr>
-				    <td align="right">Details</th>
-				    <td style="font-weight:bold"><span data-bind='text: details'></span></td>
-				  </tr>
-			  </tbody>
-			</table>	
-			
-			<h2>Playlist</h2>
-
-			<ul data-role="listview" data-inset="true" data-split-icon="delete" data-split-theme="d" >
-				<li><a href="index.html">
-				<img src="./example/cover/beatles.jpg" />
-				<h3>Beatles</h3>
-				<p>movin</p>
-				</a><a href="#" data-rel="dialog" data-transition="slideup"></a>
+        <div data-role="content">
+        	<div id="box-active-song" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+	        	<img ng-src="{{activeTrack.thumbnail}}" width="80" height="80"/>
+	        	<p class="header">Currently playing...</p>
+	        	<p class="song-title">{{activeTrack.name}}</p>
+	        	<p class="song-artist">by {{activeTrack.album.artist.name}}</p>
+	        	<p class="song-genre">from album {{activeTrack.album.name}}, {{activeTrack.album.year}}</p>
+	        	<div class="clearfix"></div>
+        	</div>
+        	
+			<ul id="songlist" data-role="listview" data-inset="true" data-theme="c"  >
+				<li ng-repeat="track in tracks | paged:{pageSize:7}" data-icon="add">
+					<a href="" ngm-click="voteTrack(this)">
+					<img ng-src="{{track.thumbnail}}" />
+					<h3>{{track.name}}</h3>
+					<p>{{track.album.artist.name}} - {{track.album.name}}</p>
+					<span class="ui-li-count">{{track.votes}}</span></a>
 				</li>
-			<li><a href="index.html">
-				<img src="./example/cover/seeed.jpg" />
-				<h3>Seeed</h3>
-				<p>Hot Chick</p>
-			</a><a href="#" data-rel="dialog" data-transition="slideup">Hot
-			</a></li>
-			<li><a href="index.html">
-				<img src="./example/cover/eminem.png" />
-				<h3>Eminem</h3>
-				<p>Encore</p>
-				</a><a href="#" data-rel="dialog" data-transition="slideup">Purchase album
-			</a></li>
 			</ul>
-	</div><!-- /content -->
-</div><!-- /page -->
+            <div ngm-if="tracks | paged:'hasMore'">
+                <a href="#" ngm-click="tracks | paged:'loadMore'" data-role="button">Load more</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="search" data-role="page" ngm-swipeleft="back()">
+        <div data-role="header">
+            <h1>Search Track</h1>
+            <a href="" data-role="button" data-rel="back" data-icon="arrow-r" class="ui-btn-right">Back</a>
+        </div>
+
+        <div data-role="content">
+            <div data-role="fieldcontain">
+                <form data-ajax="false">
+                    <input type="text" id="inputText" ng-model="$parent.inputText" placeholder="Search your favorite song" ng-model-instant>
+                    <a ng-click="searchTrack()" data-role="button" data-icon="search">Search Song</a> 
+                </form>
+            </div>
+
+			<ul id="searchResult" data-role="listview" data-inset="true" data-split-icon="delete"  data-split-theme="d" >
+				<li ng-repeat="result in results | paged:{pageSize:10}" >
+					<a href="" ngm-click="addTrack(this)">
+					<img ng-src="{{result.thumbnail}}" width="80" height="80"/>
+					<h3>{{result.title}}</h3>
+					<p>{{result.artist}} ({{result.album}})</p>
+				</li>
+			</ul>
+        </div>
+    </div>
+
+    <div id="settings" data-role="page" ngm-swiperight="back()">
+        <div data-role="header">
+            <h1>Settings</h1>
+            <a href="" id="saveSettings" data-role="button" data-rel="back" data-icon="check">Save</a>
+        </div>
+
+        <div data-role="content">
+            <div data-role="fieldcontain">
+            	<label for="storageKey">Hotify Server Address</label>
+                <input type="text" id="storageKey" ng-model="$parent.storageKey" placeholder="Enter server address here">
+            </div>
+        </div>
+    </div>
+
+</div>
+
 </body>
 </html>

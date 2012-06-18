@@ -8,60 +8,91 @@ body { padding: 0 20px; }
 
 .content {
   margin: 0 auto;
+}
+
+#current-song {
   background: #fff;
+  color: #333;
+}
+
+#current-song:after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  height: 0;
+}
+
+
+#current-song .cover {
+  height: 150px;
+  float: left;
+}
+
+#current-song .description {
+  padding: 20px 30px 30px 30px;
+  margin-left: 150px;
+}
+
+#current-song .playing { color: #000;}
+
+#current-song .title {
+  margin-top: 10px;
+  font-size: 18px;
+}
+#current-song .artist, #current-song .album {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+
+
+#playlist {
+  margin: 20px 0 0 0; 
+  /*border: 1px solid #ccc;*/
+}
+#playlist .song {
   padding: 10px;
-  text-align: center;
-}
-
-.room-box {
-  font-size: 16pt;
-}
-
-.room-box label {
-  color: #333;
-  font-size: 10pt;
-}
-.room-box input {
-  border: 1px solid #ccc;
+  /*border-top: 1px solid #ddd;
+  background: -webkit-linear-gradient(top, #f2f2f2 0%,#eaeaea 100%);*/
   background: #fff;
-  font-size: 10pt;
-  padding: 4px;
-  border-radius: 3px;
-}
-
-#songs .song {
-  padding: 20px;
-  border-top: 1px solid #ddd;
-  background: -webkit-linear-gradient(top, #f2f2f2 0%,#eaeaea 100%);
+  margin-bottom: 4px;
   text-align: left;
+  height: 30px;
 }
 
-#songs { text-align: left; }
-#songs .small { color: #333; font-size: 10pt; margin: 0 0 3px 2px; }
-#songs .song.active {
-  background: #fff;
-  border: 1px solid #e5e5e5;
-  margin-bottom: 20px;
-  color: #333;
+#playlist { 
+  text-align: left; 
+  color: #000;
 }
-#songs p {
+
+
+#playlist p {
   margin-top: 2px;
   margin-bottom: 2px;
 }
-#songs .title{
+#playlist .title{
   font-weight: bold;
   display: block;
   position: relative;
 }
-#songs .artist {
-  font-size: 80%;
+#playlist .artist, #playlist .description {
+  display: inline;
 }
-#songs .description {
-  font-size: 50%;
+#playlist .artist:after {
+  content: " - ";
 }
-#songs .votes {
+#playlist .votes {
   display: block;
   float: right;
   font-weight: normal;
-  padding: 3px;
+  
+  background: #D7D7D7;
+  width: 50px;
+  height: 50px;
+  margin: -10px -10px -10px 0;
+  text-align: center;
+  font-size: 25px;
+  line-height: 51px;
+  color: #777;
 }

@@ -3,6 +3,7 @@ require 'json'
 #require_relative "libspotify"
 require_relative "server_m"
 
+<<<<<<< HEAD
 @host = "localhost"
 @port = 8080
 
@@ -11,6 +12,11 @@ class EM::Channel
 end
 
 
+=======
+@host = "0.0.0.0"
+@port = 8080
+
+>>>>>>> 75434b753774bba4f4736c2ff41ba7eeaa706295
 def method?(s)
   data = JSON.parse(s)
   return false unless data.is_a?(Hash)
@@ -20,14 +26,9 @@ def method?(s)
 end
 
 EventMachine.run {
-  
-  puts "start ws-server #{@host} on port #{@port}"
+  puts "start hotify-proxy-server #{@host} on port #{@port}"
   @channel = EM::Channel.new
   @server = ServerM.new
-
-  EventMachine::PeriodicTimer.new(5) do
-    #@channel.push( @playlist.to_json )
-  end
 
   EventMachine::WebSocket.start(:host => @host, :port => @port) do |ws|
     ws.onopen    { 
