@@ -1,35 +1,14 @@
 require 'em-websocket'
 require 'json'
-require_relative "libspotify"
+#require_relative "libspotify"
 require_relative "server_m"
 
-@host = "172.31.8.50"
+@host = "localhost"
 @port = 8080
 
-
-@playlist = []
-
-@playlist.push({
-  label: "10. The Black Keys - Nova Baby",
-  artist: "The Black Keys",
-  album:"El Camino",
-  year:2011,
-  genre: "Alternative",
-  thumbnail: "http://172.31.8.13:8090/vfs/special://masterprofile/Thumbnails/Music/a/ad1321ee.tbn",
-  title:"Nova Baby"
-})
-
-# #@playlist = '[{"label":"10. The Black Keys - Nova Baby","artist":"The Black Keys","album":"El Camino","year":2011,"genre":"Alternative","thumbnail":"http://172.31.8.13:8090/vfs/special://masterprofile/Thumbnails/Music/a/ad1321ee.tbn","title":"Nova Baby"},{"label":"05. A Tribe Called Quest - Crew","artist":"A Tribe Called Quest","album":"Beats, Rhymes & Life","year":1996,"genre":"Hip-Hop/Rap","thumbnail":"http://172.31.8.13:8090/vfs/special://masterprofile/Thumbnails/Music/5/5a5b82eb.tbn","title":"Crew"},{"label":"03. Bahamas - Montreal","artist":"Bahamas","album":"Barchords","year":2012,"genre":"Pop","thumbnail":"http://172.31.8.13:8090/vfs/special://masterprofile/Thumbnails/Music/5/5e2be68d.tbn","title":"Montreal"},{"label":"04. Balkan Brass Band - Varnensko horo","artist":"Balkan Brass Band","album":"Balkan Brass Band","year":2009,"genre":"Weltmusik","thumbnail":"http://172.31.8.13:8090/vfs/special://masterprofile/Thumbnails/Music/c/c0e6d961.tbn","title":"Varnensko horo"},{"label":"03. Electric Guest - This Head I Hold","artist":"Electric Guest","album":"American Daydream - EP","year":2012,"genre":"Alternative","thumbnail":"http://172.31.8.13:8090/vfs/special://masterprofile/Thumbnails/Music/7/709dacee.tbn","title":"This Head I Hold"},{"label":"02. Peaches - AA XXX","artist":"Peaches","album":"The Teaches of Peaches","year":2000,"genre":"Electronic","thumbnail":"http://172.31.8.13:8090/vfs/special://masterprofile/Thumbnails/Music/f/f2344293.tbn","title":"AA XXX"}]'
-
-
-
-# def search(query)
-
-# end
-
-
-
-
+class EM::Channel
+  def uid; @uid end
+end
 
 
 def method?(s)
@@ -51,16 +30,13 @@ EventMachine.run {
   end
 
   EventMachine::WebSocket.start(:host => @host, :port => @port) do |ws|
-    
     ws.onopen    { 
-      sid = @channel.subscribe { |msg| 
-        ws.send msg 
+      sid = @channel.uid + 1 # cheat
+      sid = @channel.subscribe { |msg, id| 
+        ws.send(msg) if sid != id
       }
       puts "connected: #{sid}"
-
-      plst = @server.get_last_plst
-      puts "ffuuururur"
-      ws.send( plst.to_json ) unless plst.nil?
+      #ws.send( {msg: "hello"}.to_json )
 
       ws.onmessage { |msg|
         puts "from #{sid}:" 
@@ -68,18 +44,9 @@ EventMachine.run {
 
         case recipient
         when :back
-          #puts "send@back: - "
-          #puts "back"
-          ws.send( data.to_json )
+          #ws.send( data.to_json )
         when :all
-          #puts "send@all: #{data.inspect}"
-          #puts "alle alle"
-          #puts data.to_json
-
-          #puts "json"
-          #puts data.to_json.
-          
-          @channel.push( data.to_json )
+          @channel.push( [data.to_json, sid])
         end
       }
 

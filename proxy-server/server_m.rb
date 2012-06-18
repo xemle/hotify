@@ -1,7 +1,7 @@
 class ServerM
   
   def initialize
-    @lib = Libspotify.new
+    #@lib = Libspotify.new
     @img_cach = {} 
     
     @events = {
@@ -65,6 +65,7 @@ class ServerM
   end
 
   def update(data)
+    return data
     #puts "update"
     #puts data.keys
 
@@ -103,6 +104,7 @@ class ServerM
   end
 
   def get_cover(id)
+    return nil
     #@img_cach.fetch(id) do
       @img_cach[id] = @lib.get_cover(id) 
     #end
