@@ -7,7 +7,7 @@ var views = sp.require("sp://import/scripts/api/views");
 //var plstPlayer = sp.require("player");
 
 
-var server = "172.31.8.50:8080";
+var server = "localhost:8080";
 var ws = null;
 
 GlobPlaylist = new models.Playlist();
