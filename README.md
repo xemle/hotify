@@ -12,9 +12,8 @@ The proxy server is requried for broadcasting message. It is a simple server usi
 
 ### Install Ruby and required gems ###
 
-$ sudo apt-get install ruby-dev
-$ sudo gem install em-websocket
-$ sudo gem install hallon
+    $ sudo apt-get install ruby-dev
+    $ sudo gem install em-websocket hallon
 
 ### Install Libspotify ###
 
@@ -22,12 +21,15 @@ Download libspotify.so from https://developer.spotify.com/technologies/libspotif
 
 If you download libspotify.so to some arbitrary location let LD know about it!
 
-$ export LD_LIBRARY_PATH=<directory of libspotify.so>
+    $ export LD_LIBRARY_PATH=<directory of libspotify.so>
 
 ## Run Proxy Server ##
 
 By default the proxy server will listen on port 8080 on all interfaces
 
-$ cd proxy-server
-$ ruby server.rb
+    $ cd proxy-server
+    $ ruby server.rb
 
+# Hotify in Spotify #
+
+Add hotify directory to spotify (directory above spotify-app) and search in spotify for spotify:app:hotify
