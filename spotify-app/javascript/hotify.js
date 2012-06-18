@@ -7,8 +7,6 @@ var views = sp.require("sp://import/scripts/api/views");
 //var plstPlayer = sp.require("player");
 
 
-var server = "172.31.8.50:8080";
-var ws = null;
 
 GlobPlaylist = new models.Playlist();
 
@@ -66,95 +64,7 @@ function init() {
 	});*/
 }
 
-/*
-* Websocket
-*/
-function connectWS(callback) {
-  ws = new WebSocket("ws://" + server);
-  ws.onmessage = onRequest;
-  ws.onclose = function(data) { 
-	  console.log("socket closed ");
-	  console.log(data);
-  };
-  ws.onopen = function() {
-    console.log("connected");
-	callback();
-  };
-  ws.onerror = function(data) {
-	console.log("error: " + data);
-  };
-}
 
-function onRequest(event){
-	console.log("onRq", event);
-	var request = JSON.parse(event.data)
-	console.log("Received a query: "+request.requestType);
-	
-	var track = (function(){return models.player.track;})();
-	if(request.requestType == "PlayList"){
-		var tracks = GlobPlaylist.tracks;
-		sendMessage(new PlaylistUpdateEvent(tracks));
-	} 
-	if(request.requestType == "CurrentTrack"){
-		sendMessage(new PlayerChangeEvent(track));
-	}
-	if(request.requestType == "QuickShow"){
-		var res = [];
-		for(var i in GlobPlaylist.tracks){
-			res.push(GlobPlaylist.tracks[i].name);
-		}
-		sendMessage(new PlaylistShortEvent(res));
-	}
-	if(request.requestType == "AddTrack"){
-		GlobPlaylist.add(request.trackId);
-		sendMessage(new PlaylistUpdateEvent(playlist.tracks));
-	}
-	if(request.requestType == "VoteTrack"){
-		//console.log("Got it");
-		voteForTrack(request.trackId);
-		var tracks = GlobPlaylist.tracks;
-		for(var index in tracks){
-			//console.log("Before: ",tracks[index].name, votes[tracks[index].uri]);
-		}
-		var t0 = tracks.shift();
-		tracks.sort(sortPlaylist);
-		tracks.unshift(t0);
-		for(var index in tracks){
-			//console.log("After: ", tracks[index].name, votes[tracks[index].uri]);
-		}
-		var newPlaylist = new models.Playlist();
-		for(var index=0; index<tracks.length; index++){
-			//console.log("Adding", tracks[index].name, tracks[index]);
-			newPlaylist.add(tracks[index]);
-		}
-		/*models.player.context = newPlaylist;
-		models.player.track = tracks[0];
-		console.log("Switched Player Context");
-		(function(playlist) {
-			this.playlist = playlist;
-		})(newPlaylist);		
-		sendMessage(new PlaylistUpdateEvent(newPlaylist.tracks));
-		*/
-		for (var i=GlobPlaylist.length-1; i>0; i--) { 
-			GlobPlaylist.remove(GlobPlaylist.get(i)) 
-		}
-		
-		for (var i=1; i<newPlaylist.length; i++) {
-			GlobPlaylist.add(newPlaylist.get(i).uri);
-		}
-		sendMessage(new PlaylistUpdateEvent(GlobPlaylist.tracks));
-	}
-}
-
-
-
-function sendMessage(object) {
-	//console.log("Object type " +object.eventType);
-	var json = JSON.stringify(object);
-	console.log("send message ", object);
-	ws.send(json);
-	//console.log("message send");
-}
 
 /*
 * Spotify functions
