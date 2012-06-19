@@ -103,10 +103,9 @@ module.controller('hotifyController', function ($scope, $navigate, trackMocks, $
     };
     
     $scope.sendWsRequest = function(req) {
-        if (!$scope.ws) {
-            return;
-        }
-        $scope.ws.send(JSON.stringify(req));
+        if (!$scope.ws) return;
+        //console.log("send:", rew);
+        $scope.ws.send(req);
     };
     
     $scope.voteTrack = function(e) {
@@ -133,6 +132,7 @@ module.controller('hotifyController', function ($scope, $navigate, trackMocks, $
     $scope.createWsChannel = function(host, port) {
         var ws = new WebSocket("ws://" + host + ":" + port);
         ws.onmessage = function(evt) {
+            console.log("msg:", event.data);
             if (evt.data) {
                 var data = JSON.parse(evt.data);
                 $scope.dispatchWsData(data);
@@ -140,9 +140,21 @@ module.controller('hotifyController', function ($scope, $navigate, trackMocks, $
             }
         };
         ws.onopen = function() {
+            console.log("connected");
             $scope.sendWsRequest({requestType:"PlayList"});
-            //alert("Websocket is open!");
         };
+        ws.onerror = function(event) {
+            console.log("connection error:", event);
+        }
+        ws.onclose = function(event) {
+            console.log("connection closed", event);
+        }
+        
+        ws.send = function(data) {
+            console.log("send:", data);
+            var json = JSON.stringify(data);
+            WebSocket.prototype.send.call(ws, json);
+        }
         $scope.ws = ws;
     };
     
@@ -155,5 +167,11 @@ module.controller('hotifyController', function ($scope, $navigate, trackMocks, $
     
 //    $scope.refreshActiveSong();
 //    $scope.refreshsongs();
-    $scope.createWsChannel("localhost", "8080");
+    
+    var ip = location.search.match(new RegExp("ip=([0-9\.]*)"));
+    var host = ip ? ip[1] : "localhost";
+    var port = 8080;
+    console.log("host: " + host + ", port: " + port);
+
+    $scope.createWsChannel(host, port);
 });
