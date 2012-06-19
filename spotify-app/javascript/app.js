@@ -8,7 +8,7 @@ var models = sp.require('sp://import/scripts/api/models');
 var connection = sp.require("javascript/websocket");
 var playlist = sp.require("javascript/playlist");
 
-var server = "localhost";
+var server = (sp.core.getArguments() && sp.core.getArguments()[0]) || "localhost";
 var port = 8080;
 
 connection.init(server, port);
